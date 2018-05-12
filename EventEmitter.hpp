@@ -5,30 +5,32 @@
 #include "Queue.hpp"
 
 
-#define EVENT_EMITTER_SIGNAL(clazz, name)                            \
-    public:                                                          \
-                                                                     \
-        inline EventEmitter *name()                                  \
-        {                                                            \
-            return &mSignal_##name;                                  \
-        }                                                            \
-                                                                     \
-                                                                     \
-    private:                                                         \
+#define EVENT_EMITTER_SIGNAL(clazz, name)                                \
+    public:                                                              \
+                                                                         \
+        inline EventEmitter *name()                                      \
+        {                                                                \
+            return &mSignal_##name;                                      \
+        }                                                                \
+                                                                         \
+                                                                         \
+    private:                                                             \
         EventEmitter mSignal_##name;        
         
 
 
-#define EVENT_EMITTER_SLOT(clazz, name)                              \
-    void name();                                                     \
-    static void name##Static(EventEmitter *emitter)                  \
-    {                                                                \
-        static_cast<clazz *> (emitter)->name();                      \
-    }
+#define EVENT_EMITTER_SLOT(clazz, name)                                  \
+    public:                                                              \
+                                                                         \
+        virtual void name();                                             \
+        static void name##Static(EventEmitter *emitter)                  \
+        {                                                                \
+            static_cast<clazz *> (emitter)->name();                      \
+        }
 
 
-#define EventEmitterConnect(emitter, signal, receiver, name)         \
-    emitter->signal()->connect(receiver, &(receiver->name##Static))
+#define EventEmitterConnect(emitter, signal, receiver, name)             \
+    (emitter)->signal()->connect(receiver, &((receiver)->name##Static))
 
 
 class EventEmitter

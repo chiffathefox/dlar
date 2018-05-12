@@ -3,16 +3,17 @@
 
 
 #include "EventEmitter.hpp"
+#include "Timer.hpp"
 
 
 class Performance : public EventEmitter
 {
 
     EVENT_EMITTER_SLOT(Performance, onLoop);
+    EVENT_EMITTER_SLOT(Performance, onTimerExpired);
 
 
-    unsigned long mTimeFrame;
-    unsigned long mTimeStart;
+    Timer mTimer;
     unsigned long mCounter;
 
 
