@@ -2,7 +2,15 @@
 #include "Arduino.h"
 
 #include "Debug.hpp"
+#include "Application.hpp"
+
 #include "MovementController.hpp"
+
+
+void MovementController::onLoop()
+{
+    updateDirection();
+}
 
 
 unsigned long MovementController::targetTime() const
@@ -22,8 +30,8 @@ void MovementController::updateDirection()
     }
 
     unsigned long time = millis();
-    unsigned long lastEmited = Event::lastEmited(Loop);
-    unsigned long timeDelta = lastEmited > time ? 0 : lastEmited - time;
+    unsigned long lastEmitted = Application::instance()->loop()->lastEmitted();
+    unsigned long timeDelta = lastEmitted > time ? 0 : lastEmitted - time;
     Vector2f diff = (mTargetDirection - direction) / (targetTime() - time);
     
     direction += diff * timeDelta;
@@ -36,18 +44,10 @@ void MovementController::updateDirection()
 }
 
 
-void MovementController::loopEvent()
-{
-    Event::loopEvent();
-
-    updateDirection();
-}
-
-
 MovementController::MovementController()
-    : Event()
+    : EventEmitter()
 {
-    subscribe(Loop);
+    EventEmitterConnect(Application::instance(), loop, this, onLoop);
 }
 
 

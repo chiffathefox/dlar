@@ -2,15 +2,17 @@
 #pragma once
 
 
-#include "Event.hpp"
+#include "EventEmitter.hpp"
 
 
-class BreadthSensors : public Event
+class BreadthSensors : public EventEmitter
 {
+
+    EVENT_EMITTER_SIGNAL(BreadthSensors, ready);
+
 
     const float mWidth;
     const float mLength;
-    const type_t mValueEventType;
 
 
 public:
@@ -19,7 +21,6 @@ public:
 
     virtual float width() const;
     virtual float length() const;
-    virtual type_t valueEventType() const;
 
     virtual float front() const = 0;
     virtual float frontLeft() const = 0;

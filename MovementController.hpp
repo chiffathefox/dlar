@@ -2,12 +2,15 @@
 #pragma once
 
 
-#include "Event.hpp"
+#include "EventEmitter.hpp"
 #include "Vector2f.hpp"
 
 
-class MovementController : public Event
+class MovementController : public EventEmitter
 {
+
+    EVENT_EMITTER_SLOT(MovementController, onLoop);
+
 
     Vector2f mDirection;
     Vector2f mTargetDirection;
@@ -18,11 +21,6 @@ class MovementController : public Event
     unsigned long targetTime() const;
 
     void updateDirection();
-
-
-protected:
-
-    virtual void loopEvent() override;
 
 
 public:

@@ -2,8 +2,21 @@
 #include "Arduino.h"
 
 #include "Debug.hpp"
+#include "Application.hpp"
 
 #include "RickshawController.hpp"
+
+
+void RickshawController::onStarted()
+{
+    pinMode(mPwmPin, OUTPUT);
+    pinMode(mFwdPin, OUTPUT);
+    pinMode(mBwdPin, OUTPUT);
+
+    mServo.attach(mServoPin);
+
+    writeIdle();
+}
 
 
 void RickshawController::writeIdle()
@@ -22,26 +35,15 @@ unsigned char RickshawController::servoAngle(float y) const
 }
 
 
-void RickshawController::startEvent()
-{
-    pinMode(mPwmPin, OUTPUT);
-    pinMode(mFwdPin, OUTPUT);
-    pinMode(mBwdPin, OUTPUT);
-
-    mServo.attach(mServoPin);
-
-    writeIdle();
-}
-
-
 RickshawController::RickshawController(unsigned char pwmPin, 
         unsigned char fwdPin, unsigned char bwdPin, unsigned char servoPin)
-    : mPwmPin(pwmPin),
+    : MovementController(),
+    mPwmPin(pwmPin),
     mFwdPin(fwdPin),
     mBwdPin(bwdPin),
     mServoPin(servoPin)
 {
-    subscribe(Start);
+    EventEmitterConnect(Application::instance(), started, this, onStarted);
 
     setServoAngles(0, 90, 180);
     setMaxMotorDutyCycle(30);

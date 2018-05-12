@@ -10,6 +10,9 @@
 class RickshawController : public MovementController
 {
 
+    EVENT_EMITTER_SLOT(RickshawController, onStarted);
+
+
     const unsigned char mPwmPin;
     const unsigned char mFwdPin;
     const unsigned char mBwdPin;
@@ -27,17 +30,13 @@ class RickshawController : public MovementController
     unsigned char servoAngle(float y) const;
 
 
-protected:
-
-    virtual void startEvent() override;
-
-
 public:
 
     explicit RickshawController(unsigned char pwmPin, unsigned char fwdPin,
             unsigned char bwdPin, unsigned char servoPin);
 
     virtual void setDirection(const Vector2f &value) override;
+
 
     inline unsigned char maxMotorDutyCycle() const
     {

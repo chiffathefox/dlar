@@ -2,20 +2,18 @@
 #pragma once
 
 
-#include "Event.hpp"
+#include "EventEmitter.hpp"
 
 
-class Performance : public Event
+class Performance : public EventEmitter
 {
+
+    EVENT_EMITTER_SLOT(Performance, onLoop);
+
 
     unsigned long mTimeFrame;
     unsigned long mTimeStart;
     unsigned long mCounter;
-
-
-protected:
-
-    virtual void loopEvent() override;
 
 
 public:

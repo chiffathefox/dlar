@@ -2,11 +2,12 @@
 #include "Arduino.h"
 
 #include "Debug.hpp"
+#include "Application.hpp"
 
 #include "Performance.hpp"
 
 
-void Performance::loopEvent()
+void Performance::onLoop()
 {
     unsigned long time = millis();
 
@@ -31,9 +32,10 @@ void Performance::loopEvent()
 
 
 Performance::Performance(unsigned long timeFrame)
-    : mTimeFrame(timeFrame),
-    mCounter(0),
-    mTimeStart(millis())
+    : EventEmitter(),
+      mTimeFrame(timeFrame),
+      mCounter(0),
+      mTimeStart(millis())
 {
-    subscribe(Loop);
+    EventEmitterConnect(Application::instance(), loop, this, onLoop);
 }

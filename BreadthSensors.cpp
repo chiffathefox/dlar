@@ -3,9 +3,9 @@
 
 
 BreadthSensors::BreadthSensors(float width, float length)
-    : mWidth(width),
-    mLength(length),
-    mValueEventType(Event::add())
+    : EventEmitter(),
+    mWidth(width),
+    mLength(length)
 {
     
 }
@@ -20,10 +20,4 @@ float BreadthSensors::width() const
 float BreadthSensors::length() const
 {
     return mLength;
-}
-
-
-Event::type_t BreadthSensors::valueEventType() const
-{
-    return mValueEventType;
 }
