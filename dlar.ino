@@ -5,29 +5,46 @@
 #include "Debug.hpp"
 #include "Performance.hpp"
 #include "Application.hpp"
+#include "VL53L0XAsync.hpp"
+#include "BreadthSensors.hpp"
 
 
-VL53L0X sensor;
+static VL53L0XAsync *sensor;
+static BreadthSensors *sensors;
+static Performance *performance;
+static Performance::Ticker *ticker;
+
+
+static void initFinishedHandler(EventObject *receiver)
+{
+    debugAssert(sensor->setMeasurementTimingBudget(20000));
+}
+
+
+static void readyHandler(EventObject *receiver)
+{
+    debugLog() << sensors->front();
+    ticker->tick();
+}
 
 
 void
 setup()
 {
+    Wire.begin();
     Serial.begin(9600);
 
-    static Performance performance;
+    sensor = new VL53L0XAsync(2, 43);
+    sensor->initFinished()->connect(nullptr, &initFinishedHandler);
+
+    sensors = new BreadthSensors(10000, 20000);
+    sensors->ready()->connect(nullptr, &readyHandler);
+    sensors->setFront(sensor);
+
+    performance = new Performance;
+    ticker = performance->createTicker();
 
     Application::instance()->started()->emit();
-
-    /*
-    Wire.begin();
-    sensor.init();
-    sensor.setTimeout(500);
-    debugInfo() << sensor.setMeasurementTimingBudget(20000);
-    sensor.startContinuous();
-
-    debugLog() << "epilogue";
-    */
 }
 
 
@@ -35,13 +52,5 @@ void
 loop()
 {
     Application::instance()->loop()->emit();
-
-    /*
-    delay(25);
-    unsigned long start = millis();
-    sensor.readRangeContinuousMillimeters();
-//    sensor.readRangeSingleMillimeters();
-
-    debugLog() << millis() - start;
-    */
+    Application::instance()->loopPost()->emit();
 }

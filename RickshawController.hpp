@@ -10,7 +10,7 @@
 class RickshawController : public MovementController
 {
 
-    EVENT_EMITTER_SLOT(RickshawController, onStarted);
+    EVENT_OBJECT_SLOT(RickshawController, onStarted);
 
 
     const unsigned char mPwmPin;

@@ -4,14 +4,14 @@
 
 #include "Arduino.h"
 
-#include "EventEmitter.hpp"
+#include "EventObject.hpp"
 
 
-class Timer : public EventEmitter
+class Timer : public EventObject
 {
 
-    EVENT_EMITTER_SIGNAL(Timer, expired);
-    EVENT_EMITTER_SLOT(Timer, onLoop);
+    EVENT_OBJECT_SIGNAL(Timer, expired);
+    EVENT_OBJECT_SLOT(Timer, onLoop);
 
 
     unsigned long mTimeout;
@@ -63,6 +63,12 @@ public:
     inline unsigned long startTime() const
     {
         return mStartTime;
+    }
+
+
+    inline bool running() const
+    {
+        return mStartTime != -1;
     }
 
 

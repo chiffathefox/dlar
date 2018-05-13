@@ -45,9 +45,9 @@ void MovementController::updateDirection()
 
 
 MovementController::MovementController()
-    : EventEmitter()
+    : EventObject()
 {
-    EventEmitterConnect(Application::instance(), loop, this, onLoop);
+    EventObjectConnect(Application::instance(), loop, this, onLoop);
 }
 
 

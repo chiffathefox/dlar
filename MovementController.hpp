@@ -2,14 +2,14 @@
 #pragma once
 
 
-#include "EventEmitter.hpp"
+#include "EventObject.hpp"
 #include "Vector2f.hpp"
 
 
-class MovementController : public EventEmitter
+class MovementController : public EventObject
 {
 
-    EVENT_EMITTER_SLOT(MovementController, onLoop);
+    EVENT_OBJECT_SLOT(MovementController, onLoop);
 
 
     Vector2f mDirection;

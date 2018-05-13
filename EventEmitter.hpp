@@ -1,56 +1,28 @@
 
-#pragma once
+#pragma once 
 
 
 #include "Queue.hpp"
+#include "EventObject.hpp"
 
 
-#define EVENT_EMITTER_SIGNAL(clazz, name)                                \
-    public:                                                              \
-                                                                         \
-        inline EventEmitter *name()                                      \
-        {                                                                \
-            return &mSignal_##name;                                      \
-        }                                                                \
-                                                                         \
-                                                                         \
-    private:                                                             \
-        EventEmitter mSignal_##name;        
-        
-
-
-#define EVENT_EMITTER_SLOT(clazz, name)                                  \
-    public:                                                              \
-                                                                         \
-        virtual void name();                                             \
-        static void name##Static(EventEmitter *emitter)                  \
-        {                                                                \
-            static_cast<clazz *> (emitter)->name();                      \
-        }
-
-
-#define EventEmitterConnect(emitter, signal, receiver, name)             \
-    (emitter)->signal()->connect(receiver, &((receiver)->name##Static))
-
-
-class EventEmitter
+class EventEmitter : public EventObject
 {
+
+    EVENT_OBJECT_SLOT(EventEmitter, emit);
 
 
 public:
 
-    typedef void (*Slot)(EventEmitter *emitter);
+    typedef void (*Slot)(EventObject *receiver);
 
 
-    inline explicit EventEmitter()
-        : mLastEmitted(-1)
-    {
+    explicit EventEmitter();
 
-    }
-
-
-    void connect(EventEmitter *receiver, Slot slot);
-    void emit();
+    void connect(EventObject *receiver, Slot slot);
+    void disconnect(EventObject *receiver, Slot slot);
+    void once(EventObject *receiver, Slot slot);
+    void post();
 
 
     inline unsigned long lastEmitted() const
@@ -59,21 +31,48 @@ public:
     }
 
 
+    inline bool emitting() const
+    {
+        return mEmitting;
+    }
+
+
 private:
 
     struct ReceiverSlot
     {
 
-        EventEmitter *receiver;
+        EventObject *receiver;
         Slot slot;
 
+        unsigned once:1;
+
         
-        inline explicit ReceiverSlot(EventEmitter *receiver = nullptr, 
-                Slot slot = nullptr)
+        inline explicit ReceiverSlot(EventObject *receiver = nullptr, 
+                Slot slot = nullptr, bool once = false)
             : receiver(receiver),
-            slot(slot)
+            slot(slot),
+            once(once)
         {
 
+        }
+
+
+        bool operator==(const ReceiverSlot &value) const
+        {
+            if (receiver == nullptr) {
+                if (slot == nullptr) {
+                    return value.receiver != nullptr && value.slot != nullptr;
+                }
+
+                return slot == value.slot;
+            }
+
+            if (slot == nullptr) {
+                return receiver == value.receiver;
+            }
+
+            return slot == value.slot && receiver == value.receiver;
         }
 
 
@@ -82,6 +81,8 @@ private:
 
     Queue<ReceiverSlot> mReceivers;
     unsigned long mLastEmitted;
+
+    unsigned mEmitting:1;
 
 
 };

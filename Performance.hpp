@@ -2,23 +2,59 @@
 #pragma once
 
 
-#include "EventEmitter.hpp"
+#include "EventObject.hpp"
 #include "Timer.hpp"
 
 
-class Performance : public EventEmitter
+class Performance : public EventObject
 {
 
-    EVENT_EMITTER_SLOT(Performance, onLoop);
-    EVENT_EMITTER_SLOT(Performance, onTimerExpired);
+    EVENT_OBJECT_SLOT(Performance, onLoop);
+    EVENT_OBJECT_SLOT(Performance, onTimerExpired);
+
+
+    static const unsigned char sTickersSize;
 
 
     Timer mTimer;
     unsigned long mCounter;
+    unsigned char mLastTicker;
 
 
 public:
 
+    class Ticker
+    {
+        unsigned long mCounter;
+
+
+        friend void Performance::onTimerExpired();
+
+        
+    public:
+
+        inline explicit Ticker()
+            : mCounter(0)
+        {
+
+        }
+
+        inline void tick()
+        {
+            mCounter++;
+        }
+
+
+    };
+
+
     explicit Performance(unsigned long timeFrame = 10000);
+
+    Ticker *createTicker();
+
+
+private:
+
+    Ticker *mTickers;
 
 };

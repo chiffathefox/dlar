@@ -1,25 +1,75 @@
 
 #include "Arduino.h"
 
+#include "Debug.hpp"
+#include "Application.hpp"
+
 #include "EventEmitter.hpp"
 
 
-void EventEmitter::connect(EventEmitter *receiver, Slot slot)
+EventEmitter::EventEmitter()
+    : mLastEmitted(-1),
+    mEmitting(false)
 {
-    mReceivers.insert(ReceiverSlot(receiver, slot));
+}
+
+
+void EventEmitter::connect(EventObject *receiver, Slot slot)
+{
+    ReceiverSlot receiverSlot(receiver, slot);
+
+    if (!mReceivers.has(receiverSlot)) {
+        mReceivers.insert(receiverSlot);
+    } else {
+        debugWarn();
+    }
+}
+
+
+void EventEmitter::disconnect(EventObject *receiver, Slot slot)
+{
+    mReceivers.remove(ReceiverSlot(receiver, slot), false);
+}
+
+
+void EventEmitter::once(EventObject *receiver, Slot slot)
+{
+    ReceiverSlot receiverSlot(receiver, slot, true);
+
+    if (!mReceivers.has(receiverSlot)) {
+        mReceivers.insert(receiverSlot);
+    } else {
+        debugWarn();
+    }
 }
 
 
 void EventEmitter::emit()
 {
-    QueueNode<ReceiverSlot> *head = mReceivers.head();
+    Queue<ReceiverSlot> receivers(mReceivers);
+    QueueNode<ReceiverSlot> *head = receivers.head();
+
+    mEmitting = true;
 
     for (QueueNode<ReceiverSlot> *node = head->next;
         node != head;
         node = node->next) {
 
-        node->value.slot(node->value.receiver);
+        ReceiverSlot &receiverSlot = node->value;
+
+        if (receiverSlot.once) {
+            mReceivers.remove(receiverSlot);
+        }
+
+        receiverSlot.slot(receiverSlot.receiver);
     }
 
     mLastEmitted = millis();
+    mEmitting = false;
+}
+
+
+void EventEmitter::post()
+{
+    EventObjectOnce(Application::instance(), loopPost, this, emit);
 }

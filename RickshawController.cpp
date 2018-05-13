@@ -43,7 +43,7 @@ RickshawController::RickshawController(unsigned char pwmPin,
     mBwdPin(bwdPin),
     mServoPin(servoPin)
 {
-    EventEmitterConnect(Application::instance(), started, this, onStarted);
+    EventObjectConnect(Application::instance(), started, this, onStarted);
 
     setServoAngles(0, 90, 180);
     setMaxMotorDutyCycle(30);

@@ -2,14 +2,15 @@
 #pragma once
 
 
-#include "EventEmitter.hpp"
+#include "EventObject.hpp"
 
 
-class Application : public EventEmitter
+class Application : public EventObject
 {
 
-    EVENT_EMITTER_SIGNAL(Application, started);
-    EVENT_EMITTER_SIGNAL(Application, loop);
+    EVENT_OBJECT_SIGNAL(Application, started);
+    EVENT_OBJECT_SIGNAL(Application, loop);
+    EVENT_OBJECT_SIGNAL(Application, loopPost);
 
 
     static Application sInstance;
