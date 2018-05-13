@@ -21,5 +21,7 @@ public:
     virtual void start() = 0;
     virtual void reinit() = 0;
     virtual uint16_t range() const = 0;
+    virtual uint16_t delta() const = 0;
+    virtual uint16_t maximum() const = 0;
 
 };

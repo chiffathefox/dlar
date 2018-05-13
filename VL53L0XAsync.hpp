@@ -40,6 +40,8 @@ public:
     virtual void start() override;
     virtual void reinit() override;
     virtual uint16_t range() const override;
+    virtual uint16_t delta() const override;
+    virtual uint16_t maximum() const override;
 
 
   public:

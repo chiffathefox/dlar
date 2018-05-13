@@ -4,7 +4,7 @@
 #include "BreadthSensors.hpp"
 
 
-#define BREADTH_SENSOR(name, camelPart, factor, mask)  \
+#define BREADTH_SENSOR(name, camelPart, mask)  \
     void BreadthSensors::name##InitFailed()            \
     {                                                  \
         m##camelPart->reinit();                        \
@@ -43,20 +43,10 @@ BreadthSensors::BreadthSensors(float width, float length)
     : EventObject(),
     mWidth(width),
     mLength(length),
+    mMaxDelta(0),
+    mMaximum(0),
     mSensors(0),
     mReadySensors(0)
 {
 
-}
-
-
-float BreadthSensors::width() const
-{
-    return mWidth;
-}
-
-
-float BreadthSensors::length() const
-{
-    return mLength;
 }

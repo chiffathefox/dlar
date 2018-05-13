@@ -82,7 +82,19 @@ void VL53L0XAsync::start()
 
 uint16_t VL53L0XAsync::range() const
 {
-    return mRange;
+    return mRange > maximum() ? -1 : mRange;
+}
+
+
+uint16_t VL53L0XAsync::delta() const
+{
+    return 40;
+}
+
+
+uint16_t VL53L0XAsync::maximum() const
+{
+    return 900;
 }
 
 

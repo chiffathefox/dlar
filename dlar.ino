@@ -28,11 +28,16 @@ static void readyHandler(EventObject *receiver)
 }
 
 
+#include <math.h>
+
+
 void
 setup()
 {
     Wire.begin();
     Serial.begin(9600);
+
+    debugLog() << signbit(INFINITY) << signbit(-INFINITY);
 
     sensor = new VL53L0XAsync(2, 43);
     sensor->initFinished()->connect(nullptr, &initFinishedHandler);

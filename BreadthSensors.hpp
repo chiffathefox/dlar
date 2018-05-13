@@ -2,12 +2,14 @@
 #pragma once
 
 
+#include <math.h>
+
 #include "EventObject.hpp"
 #include "RangeSensor.hpp"
 #include "Debug.hpp"
 
 
-#define BREADTH_SENSOR(name, camelPart, factor, mask)                          \
+#define BREADTH_SENSOR(name, camelPart, mask)                          \
     EVENT_OBJECT_SLOT(BreadthSensors, name##InitFailed);                       \
     EVENT_OBJECT_SLOT(BreadthSensors, name##InitFinished);                     \
     EVENT_OBJECT_SLOT(BreadthSensors, name##RangeError);                       \
@@ -27,6 +29,18 @@
             EventObjectConnect(value, rangeError, this, name##RangeError);     \
             EventObjectConnect(value, rangeReady, this, name##RangeReady);     \
                                                                                \
+            float delta = value->delta();                                      \
+                                                                               \
+            if (delta > mMaxDelta) {                                           \
+                mMaxDelta = delta;                                             \
+            }                                                                  \
+                                                                               \
+            float maximum = value->maximum();                                  \
+                                                                               \
+            if (maximum > mMaximum) {                                          \
+                mMaximum = maximum;                                            \
+            }                                                                  \
+                                                                               \
             m##camelPart = value;                                              \
         }                                                                      \
                                                                                \
@@ -35,16 +49,20 @@
         {                                                                      \
             debugAssert(mReadySensors & mSensors == mSensors);                 \
                                                                                \
-            return (float) m##camelPart->range() * factor;                     \
+            if (m##camelPart->range() == -1) {                                 \
+                return INFINITY;                                               \
+            }                                                                  \
+                                                                               \
+            return (float) m##camelPart->range();                              \
         }
 
 
-#define BREADTH_SENSORS                            \
-    BREADTH_SENSOR(front, Front, 1, 1);            \
-    BREADTH_SENSOR(frontLeft, FrontLeft, -1, 2);   \
-    BREADTH_SENSOR(frontRight, FrontRight, 1, 4);  \
-    BREADTH_SENSOR(rearLeft, RearLeft, -1, 8);     \
-    BREADTH_SENSOR(rearRight, RearRight, 1, 16);
+#define BREADTH_SENSORS                         \
+    BREADTH_SENSOR(front, Front, 1);            \
+    BREADTH_SENSOR(frontLeft, FrontLeft, 2);    \
+    BREADTH_SENSOR(frontRight, FrontRight, 4);  \
+    BREADTH_SENSOR(rearLeft, RearLeft, 8);      \
+    BREADTH_SENSOR(rearRight, RearRight, 16);
 
 
 class BreadthSensors : public EventObject
@@ -58,6 +76,9 @@ class BreadthSensors : public EventObject
     const float mWidth;
     const float mLength;
 
+    float mMaxDelta;
+    float mMaximum;
+
     unsigned char mSensors;
     unsigned char mReadySensors;
 
@@ -66,8 +87,29 @@ public:
 
     explicit BreadthSensors(float width, float length);
 
-    float width() const;
-    float length() const;
+    inline float width() const
+    {
+        return mWidth;
+    }
+
+
+    inline float length() const
+    {
+        return mLength;
+    }
+
+
+    inline float maxDelta() const
+    {
+        return mMaxDelta;
+    }
+
+
+    inline float maximum() const
+    {
+        return mMaximum;
+    }
+
 
 };
 
