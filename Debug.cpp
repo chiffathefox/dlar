@@ -21,6 +21,7 @@ void Debug::panic()
     pinMode(LED_BUILTIN, OUTPUT);
 
     for (bool state = LOW ;; state = !state) {
+        Serial.write("PANIC");
         digitalWrite(LED_BUILTIN, state);
         delay(500);
     }
@@ -37,7 +38,6 @@ void Debug::panic(const char *file, int line, const char *message)
         Serial.end();
     }
 
-    Serial.begin(9600);
     pinMode(LED_BUILTIN, OUTPUT);
 
     for (unsigned char n = 0 ;; n++) {

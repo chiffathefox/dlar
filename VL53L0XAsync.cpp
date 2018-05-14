@@ -49,6 +49,9 @@
 const unsigned char VL53L0XAsync::DefaultAddress = 0b0101001;
 
 
+bool VL53L0XAsync::sDrivingXshut = false;
+
+
 bool VL53L0XAsync::tickTimer()
 {
     return io_timeout > 0 && ++mExpires >= io_timeout / mTimer.timeout();
@@ -94,7 +97,7 @@ uint16_t VL53L0XAsync::delta() const
 
 uint16_t VL53L0XAsync::maximum() const
 {
-    return 900;
+    return 700;
 }
 
 
@@ -394,6 +397,14 @@ void VL53L0XAsync::onStarted()
     stopTimer(onStarted);
 
     if (mXshutPin != 0) {
+        if (sDrivingXshut) {
+            startTimer(onStarted);
+
+            return;
+        }
+
+        sDrivingXshut = true;
+
         pinMode(mXshutPin, INPUT);
         startTimer(onStartedTimerExpired);
     } else {
@@ -404,6 +415,10 @@ void VL53L0XAsync::onStarted()
 
 void VL53L0XAsync::onStartedTimerExpired()
 {
+    if (mTimer.running()) {
+        sDrivingXshut = false;
+    }
+
     stopTimer(onStartedTimerExpired);
 
     if (address != DefaultAddress) {

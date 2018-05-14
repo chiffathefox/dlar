@@ -60,9 +60,11 @@
 #define BREADTH_SENSORS                         \
     BREADTH_SENSOR(front, Front, 1);            \
     BREADTH_SENSOR(frontLeft, FrontLeft, 2);    \
-    BREADTH_SENSOR(frontRight, FrontRight, 4);  \
+    BREADTH_SENSOR(frontRight, FrontRight, 4);  
+/*
     BREADTH_SENSOR(rearLeft, RearLeft, 8);      \
     BREADTH_SENSOR(rearRight, RearRight, 16);
+    */
 
 
 class BreadthSensors : public EventObject
