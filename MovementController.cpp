@@ -1,4 +1,6 @@
 
+#include <float.h>
+
 #include "Arduino.h"
 
 #include "Debug.hpp"
@@ -59,7 +61,7 @@ Vector2f MovementController::direction() const
 
 void MovementController::setDirection(const Vector2f &value)
 {
-    debugAssert(value.sqrMagnitude() <= 1);
+    debugAssert(1 + FLT_EPSILON - value.sqrMagnitude() >= 0);
 
     mDirection = value;
     mTargetDirection = value;
@@ -70,7 +72,7 @@ void MovementController::setDirection(const Vector2f &value)
 void MovementController::lerpDirectionTo(const Vector2f &value,
         unsigned long time)
 {
-    debugAssert(value.sqrMagnitude() <= 1);
+    debugAssert(1 + FLT_EPSILON - value.sqrMagnitude() >= 0);
 
     mTargetDirection = value;
     mTargetTime = millis() + time;

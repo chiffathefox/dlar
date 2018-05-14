@@ -2,6 +2,9 @@
 #pragma once
 
 
+#include "Logger.hpp"
+
+
 class Vector2f
 {
 
@@ -149,5 +152,6 @@ public:
     {
         return x() == value.x() && y() == value.y();
     }
+
 
 };

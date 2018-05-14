@@ -1,4 +1,6 @@
 
+#include <math.h>
+
 #include "Arduino.h"
 
 #include "Debug.hpp"
@@ -29,9 +31,9 @@ void RickshawController::writeIdle()
 }
 
 
-unsigned char RickshawController::servoAngle(float y) const
+unsigned char RickshawController::servoAngle(float x) const
 {
-    return (float) servoMiddleAngle() + y * mServoFactors[y > 0];
+    return(float) servoMiddleAngle() + fabs(x) * mServoFactors[x > 0];
 }
 
 
@@ -54,13 +56,13 @@ void RickshawController::setDirection(const Vector2f &value)
 {
     MovementController::setDirection(value);
 
-    bool isForward = value.x() > 0;
+    bool isForward = value.y() > 0;
 
     digitalWrite(mFwdPin, isForward);
     digitalWrite(mBwdPin, !isForward);
-    analogWrite(mPwmPin, (float) maxMotorDutyCycle() * value.x());
+    analogWrite(mPwmPin, (float) maxMotorDutyCycle() * value.y());
 
-    mServo.write(servoAngle(value.y()));
+    mServo.write(servoAngle(value.x()));
 }
 
 

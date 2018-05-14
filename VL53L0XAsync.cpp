@@ -97,7 +97,7 @@ uint16_t VL53L0XAsync::delta() const
 
 uint16_t VL53L0XAsync::maximum() const
 {
-    return 700;
+    return 900;
 }
 
 

@@ -27,7 +27,7 @@ class RickshawController : public MovementController
 
 
     void writeIdle();
-    unsigned char servoAngle(float y) const;
+    unsigned char servoAngle(float x) const;
 
 
 public:

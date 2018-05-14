@@ -53,5 +53,5 @@ Performance::Ticker *Performance::createTicker()
 {
     debugAssert(mLastTicker < sTickersSize);
 
-    return &mTickers[mLastTicker++];
+    return mTickers + mLastTicker++;
 }

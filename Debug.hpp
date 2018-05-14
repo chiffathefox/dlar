@@ -30,7 +30,7 @@
 #endif
 
 
-#if (DEBUG)
+#if 0
 
 
 #    include "SerialLogger.hpp"
@@ -45,6 +45,24 @@
 
 #    define debugInfo()                                    \
     SerialLogger("\033[32mI", __PRETTY_FUNCTION__, "\033[0m\n")
+
+
+#elif (DEBUG)
+
+
+#    include "SerialLogger.hpp"
+
+
+#    define debugLog() SerialLogger("D", __func__)
+
+
+#    define debugWarn()                                    \
+    SerialLogger("\033[33mW", __func__, "\033[0m\n")
+
+
+#    define debugInfo()                                    \
+    SerialLogger("\033[32mI", __func__, "\033[0m\n")
+
 
 
 #else
@@ -63,6 +81,16 @@
 
 
 #endif
+
+
+#if 0
+#include "DummyLogger.hpp"
+#undef debugWarn
+#undef debugInfo
+#define debugWarn() DummyLogger()
+#define debugInfo() DummyLogger()
+#endif
+
 
 
 class Debug
