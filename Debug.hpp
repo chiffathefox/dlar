@@ -36,15 +36,15 @@
 #    include "SerialLogger.hpp"
 
 
-#    define debugLog() SerialLogger("DEBUG", __PRETTY_FUNCTION__)
+#    define debugLog() SerialLogger("D", __PRETTY_FUNCTION__)
 
 
 #    define debugWarn()                                    \
-    SerialLogger("\033[33mWARN", __PRETTY_FUNCTION__, "\033[0m\n")
+    SerialLogger("\033[33mW", __PRETTY_FUNCTION__, "\033[0m\n")
 
 
 #    define debugInfo()                                    \
-    SerialLogger("\033[32mINFO", __PRETTY_FUNCTION__, "\033[0m\n")
+    SerialLogger("\033[32mI", __PRETTY_FUNCTION__, "\033[0m\n")
 
 
 #else

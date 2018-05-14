@@ -10,7 +10,7 @@ SerialLogger::SerialLogger(const char *level, const char *tag,
     mSuffix(suffix)
 {
     Serial.write(level);
-    Serial.write(": ");
+    Serial.write(":");
     Serial.write(tag);
     Serial.write(":");
 }

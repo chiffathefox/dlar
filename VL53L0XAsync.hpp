@@ -25,6 +25,9 @@ class VL53L0XAsync : public RangeSensor
     static const unsigned char DefaultAddress;
 
 
+    static bool sDrivingXshut;
+
+
     const unsigned char mXshutPin;
     unsigned char mExpires;
     uint16_t mRange;
