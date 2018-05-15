@@ -13,8 +13,29 @@
 static void sensorOnInitFinished(EventObject *receiver)
 {
     VL53L0XAsync *sensor = static_cast<VL53L0XAsync *> (receiver);
-    debugAssert(sensor->setMeasurementTimingBudget(80000));
-    debugAssert(sensor->setSignalRateLimit(0.1));
+
+    debugAssert(sensor->setMeasurementTimingBudget(20000));
+    sensor->setSignalRateLimit(0.1);
+}
+
+
+static void sensorOnInitFailed(EventObject *receiver)
+{
+    debugWarn();
+}
+
+
+static VL53L0XAsync *createSensor(unsigned char xshutPin,
+        unsigned char address)
+{
+    VL53L0XAsync *sensor = new VL53L0XAsync(xshutPin, address);
+
+    sensor->setVcselPeriodPreRange(18);
+    sensor->setVcselPeriodFinalRange(14);
+    sensor->initFinished()->connect(sensor, &sensorOnInitFinished);
+    sensor->initFailed()->connect(sensor, &sensorOnInitFailed);
+
+    return sensor;
 }
 
 
@@ -35,19 +56,10 @@ setup()
 
     Performance *performance = new Performance;
     BreadthSensors *sensors = new BreadthSensors(170, 300);
-    VL53L0XAsync *sensor;
 
-    sensor = new VL53L0XAsync(12, 44);
-    sensor->initFinished()->connect(sensor, &sensorOnInitFinished);
-    sensors->setFront(sensor);
-
-    sensor = new VL53L0XAsync(10, 46);
-    sensor->initFinished()->connect(sensor, &sensorOnInitFinished);
-    sensors->setFrontLeft(sensor);
-
-    sensor = new VL53L0XAsync(11, 45);
-    sensor->initFinished()->connect(sensor, &sensorOnInitFinished);
-    sensors->setFrontRight(sensor);
+    sensors->setFront(createSensor(12, 44));
+    sensors->setFrontLeft(createSensor(10, 46));
+    sensors->setFrontRight(createSensor(11, 45));
 
     RickshawController *rickshawController = new RickshawController(3, 4, 5, 9);
     rickshawController->setMaxMotorDutyCycle(25);
@@ -55,8 +67,6 @@ setup()
 
     BasicMovementHeuristics *heuristics = new BasicMovementHeuristics(sensors,
             rickshawController, performance);
-
-    debugInfo() << sensors->maxDelta() << sensors->maximum();
 
 
     Application::instance()->started()->emit();
@@ -66,7 +76,6 @@ setup()
 void
 loop()
 {
-//    debugLog() << freeRam();
     Application::instance()->loop()->emit();
     Application::instance()->loopPost()->emit();
 }

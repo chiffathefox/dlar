@@ -91,13 +91,13 @@ uint16_t VL53L0XAsync::range() const
 
 uint16_t VL53L0XAsync::delta() const
 {
-    return 40;
+    return 30;
 }
 
 
 uint16_t VL53L0XAsync::maximum() const
 {
-    return 900;
+    return 1700;
 }
 
 
@@ -232,7 +232,10 @@ void VL53L0XAsync::onSpadInfoTimerExpired()
   writeReg(0x51, 0x00);
   writeReg(0x52, 0x96);
   writeReg(0x56, 0x08);
+
+
   writeReg(0x57, 0x30);
+
   writeReg(0x61, 0x00);
   writeReg(0x62, 0x00);
   writeReg(0x64, 0x00);
@@ -339,13 +342,174 @@ void VL53L0XAsync::onSpadInfoTimerExpired()
 
 void VL53L0XAsync::onVhvCalibration()
 {
-    singleRefCalibration()->disconnect(this, nullptr);
-    EventObjectOnce(this, singleRefCalibration, this, onPhaseCalibration);
-    
+    SequenceStepEnables enables;
+    SequenceStepTimeouts timeouts;
+
+    getSequenceStepEnables(&enables);
+    getSequenceStepTimeouts(&enables, &timeouts);
+
+    /* Set VcselPeriodPreRange */
+
+    switch (mVcselPeriodPreRange) {
+
+
+    case 12:
+
+        writeReg(PRE_RANGE_CONFIG_VALID_PHASE_HIGH, 0x18);
+
+        break;
+
+
+    case 14:
+
+        writeReg(PRE_RANGE_CONFIG_VALID_PHASE_HIGH, 0x30);
+
+        break;
+
+
+    case 16:
+
+        writeReg(PRE_RANGE_CONFIG_VALID_PHASE_HIGH, 0x40);
+
+        break;
+
+
+    case 18:
+
+        writeReg(PRE_RANGE_CONFIG_VALID_PHASE_HIGH, 0x50);
+
+        break;
+
+
+    }
+
+    writeReg(PRE_RANGE_CONFIG_VALID_PHASE_LOW, 0x08);
+    writeReg(PRE_RANGE_CONFIG_VCSEL_PERIOD,
+            encodeVcselPeriod(mVcselPeriodPreRange));
+
+    // update timeouts
+
+    // set_sequence_step_timeout() begin
+    // (SequenceStepId == VL53L0X_SEQUENCESTEP_PRE_RANGE)
+
+    uint16_t new_pre_range_timeout_mclks =
+      timeoutMicrosecondsToMclks(timeouts.pre_range_us, mVcselPeriodPreRange);
+
+    writeReg16Bit(PRE_RANGE_CONFIG_TIMEOUT_MACROP_HI,
+      encodeTimeout(
+          timeoutMicrosecondsToMclks(timeouts.pre_range_us,
+              mVcselPeriodPreRange)));
+
+    // set_sequence_step_timeout() end
+
+    // set_sequence_step_timeout() begin
+    // (SequenceStepId == VL53L0X_SEQUENCESTEP_MSRC)
+
+    uint16_t new_msrc_timeout_mclks =
+      timeoutMicrosecondsToMclks(timeouts.msrc_dss_tcc_us,
+              mVcselPeriodPreRange);
+
+    writeReg(MSRC_CONFIG_TIMEOUT_MACROP,
+      (new_msrc_timeout_mclks > 256) ? 255 : (new_msrc_timeout_mclks - 1));
+
+    // set_sequence_step_timeout() end
+
+    /* Set VcselPeriodFinalRange */
+
+    switch (mVcselPeriodFinalRange) {
+
+
+    case 8:
+
+        writeReg(FINAL_RANGE_CONFIG_VALID_PHASE_HIGH, 0x10);
+        writeReg(FINAL_RANGE_CONFIG_VALID_PHASE_LOW,  0x08);
+        writeReg(GLOBAL_CONFIG_VCSEL_WIDTH, 0x02);
+        writeReg(ALGO_PHASECAL_CONFIG_TIMEOUT, 0x0C);
+        writeReg(0xFF, 0x01);
+        writeReg(ALGO_PHASECAL_LIM, 0x30);
+        writeReg(0xFF, 0x00);
+
+        break;
+
+
+    case 10:
+
+        writeReg(FINAL_RANGE_CONFIG_VALID_PHASE_HIGH, 0x28);
+        writeReg(FINAL_RANGE_CONFIG_VALID_PHASE_LOW,  0x08);
+        writeReg(GLOBAL_CONFIG_VCSEL_WIDTH, 0x03);
+        writeReg(ALGO_PHASECAL_CONFIG_TIMEOUT, 0x09);
+        writeReg(0xFF, 0x01);
+        writeReg(ALGO_PHASECAL_LIM, 0x20);
+        writeReg(0xFF, 0x00);
+
+        break;
+
+
+    case 12:
+
+        writeReg(FINAL_RANGE_CONFIG_VALID_PHASE_HIGH, 0x38);
+        writeReg(FINAL_RANGE_CONFIG_VALID_PHASE_LOW,  0x08);
+        writeReg(GLOBAL_CONFIG_VCSEL_WIDTH, 0x03);
+        writeReg(ALGO_PHASECAL_CONFIG_TIMEOUT, 0x08);
+        writeReg(0xFF, 0x01);
+        writeReg(ALGO_PHASECAL_LIM, 0x20);
+        writeReg(0xFF, 0x00);
+
+        break;
+
+
+    case 14:
+
+        writeReg(FINAL_RANGE_CONFIG_VALID_PHASE_HIGH, 0x48);
+        writeReg(FINAL_RANGE_CONFIG_VALID_PHASE_LOW,  0x08);
+        writeReg(GLOBAL_CONFIG_VCSEL_WIDTH, 0x03);
+        writeReg(ALGO_PHASECAL_CONFIG_TIMEOUT, 0x07);
+        writeReg(0xFF, 0x01);
+        writeReg(ALGO_PHASECAL_LIM, 0x20);
+        writeReg(0xFF, 0x00);
+
+        break;
+
+
+    }
+
+    // apply new VCSEL period
+    writeReg(FINAL_RANGE_CONFIG_VCSEL_PERIOD,
+            encodeVcselPeriod(mVcselPeriodFinalRange));
+
+    // update timeouts
+
+    // set_sequence_step_timeout() begin
+    // (SequenceStepId == VL53L0X_SEQUENCESTEP_FINAL_RANGE)
+
+    // "For the final range timeout, the pre-range timeout
+    //  must be added. To do this both final and pre-range
+    //  timeouts must be expressed in macro periods MClks
+    //  because they have different vcsel periods."
+
+    uint16_t new_final_range_timeout_mclks =
+      timeoutMicrosecondsToMclks(timeouts.final_range_us,
+              mVcselPeriodFinalRange);
+
+    if (enables.pre_range)
+    {
+      new_final_range_timeout_mclks += timeouts.pre_range_mclks;
+    }
+
+    writeReg16Bit(FINAL_RANGE_CONFIG_TIMEOUT_MACROP_HI,
+      encodeTimeout(new_final_range_timeout_mclks));
+
+    // set_sequence_step_timeout end
+
+    setMeasurementTimingBudget(measurement_timing_budget_us);
+
+
   // -- VL53L0X_perform_phase_calibration() begin
 
-  writeReg(SYSTEM_SEQUENCE_CONFIG, 0x02);
-  performSingleRefCalibration(0x00);
+    singleRefCalibration()->disconnect(this, nullptr);
+    EventObjectOnce(this, singleRefCalibration, this, onPhaseCalibration);
+    writeReg(SYSTEM_SEQUENCE_CONFIG, 0x02);
+    performSingleRefCalibration(0x00);
 
   // -- VL53L0X_perform_phase_calibration() end
 }
@@ -371,7 +535,9 @@ VL53L0XAsync::VL53L0XAsync(unsigned char xshutPin, unsigned char address)
   , did_timeout(false),
     mTimer(10),
     mRange(0),
-    mXshutPin(xshutPin)
+    mXshutPin(xshutPin),
+    mVcselPeriodPreRange(14),
+    mVcselPeriodFinalRange(10)
 {
     EventObjectConnect(Application::instance(), started, this, onStarted);
 
@@ -592,13 +758,12 @@ void VL53L0XAsync::readMulti(uint8_t reg, uint8_t * dst, uint8_t count)
 // seems to increase the likelihood of getting an inaccurate reading because of
 // unwanted reflections from objects other than the intended target.
 // Defaults to 0.25 MCPS as initialized by the ST API and this library.
-bool VL53L0XAsync::setSignalRateLimit(float limit_Mcps)
+void VL53L0XAsync::setSignalRateLimit(float limit_Mcps)
 {
-  if (limit_Mcps < 0 || limit_Mcps > 511.99) { return false; }
+  debugAssert(limit_Mcps >= 0 && limit_Mcps <= 511.99);
 
   // Q9.7 fixed point format (9 integer bits, 7 fractional bits)
   writeReg16Bit(FINAL_RANGE_CONFIG_MIN_COUNT_RATE_RTN_LIMIT, limit_Mcps * (1 << 7));
-  return true;
 }
 
 // Get the return signal rate limit check value in MCPS
@@ -970,4 +1135,20 @@ void VL53L0XAsync::onPerformSingleRefCalibrationTimerExpired()
     writeReg(SYSRANGE_START, 0x00);
 
     singleRefCalibration()->post();
+}
+
+
+void VL53L0XAsync::setVcselPeriodPreRange(unsigned char value)
+{
+    debugAssert(value == 12 || value == 14 || value == 16 || value == 18);
+
+    mVcselPeriodPreRange = value;
+}
+
+
+void VL53L0XAsync::setVcselPeriodFinalRange(unsigned char value)
+{
+    debugAssert(value == 8 || value == 10 || value == 12 || value == 14);
+
+    mVcselPeriodFinalRange = value;
 }

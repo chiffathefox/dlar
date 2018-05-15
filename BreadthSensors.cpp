@@ -4,7 +4,7 @@
 #include "BreadthSensors.hpp"
 
 
-#define BREADTH_SENSOR(name, camelPart, mask)  \
+#define BREADTH_SENSOR(name, camelPart, mask)          \
     void BreadthSensors::name##InitFailed()            \
     {                                                  \
         m##camelPart->reinit();                        \

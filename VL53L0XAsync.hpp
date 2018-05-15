@@ -30,12 +30,17 @@ class VL53L0XAsync : public RangeSensor
 
     const unsigned char mXshutPin;
     unsigned char mExpires;
+    unsigned char mVcselPeriodPreRange;
+    unsigned char mVcselPeriodFinalRange;
     uint16_t mRange;
     Timer mTimer;
 
 
     bool tickTimer();
     void shutdown();
+
+    void startContinuous(uint32_t period_ms = 0);
+    void stopContinuous(void);
 
 
 public:
@@ -153,18 +158,15 @@ public:
     void writeMulti(uint8_t reg, uint8_t const * src, uint8_t count);
     void readMulti(uint8_t reg, uint8_t * dst, uint8_t count);
 
-    bool setSignalRateLimit(float limit_Mcps);
+    void setSignalRateLimit(float limit_Mcps);
     float getSignalRateLimit(void);
 
     bool setMeasurementTimingBudget(uint32_t budget_us);
     uint32_t getMeasurementTimingBudget(void);
 
+    void setVcselPeriodPreRange(unsigned char value);
+    void setVcselPeriodFinalRange(unsigned char value);
     uint8_t getVcselPulsePeriod(vcselPeriodType type);
-
-    void startContinuous(uint32_t period_ms = 0);
-    void stopContinuous(void);
-    //uint16_t readRangeContinuousMillimeters(void);
-    //uint16_t readRangeSingleMillimeters(void);
 
     inline void setTimeout(uint16_t timeout) { io_timeout = timeout; }
     inline uint16_t getTimeout(void) { return io_timeout; }
