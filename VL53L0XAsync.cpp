@@ -91,13 +91,13 @@ uint16_t VL53L0XAsync::range() const
 
 uint16_t VL53L0XAsync::delta() const
 {
-    return 30;
+    return 10;
 }
 
 
 uint16_t VL53L0XAsync::maximum() const
 {
-    return 1700;
+    return 1500;
 }
 
 

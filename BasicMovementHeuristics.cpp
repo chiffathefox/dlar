@@ -13,27 +13,46 @@ void BasicMovementHeuristics::eval()
     Vector2f direction;
 
     if (fabs(diff) > minDiff && !isnan(diff)) {
-        diff -= minDiff;
+        diff -= copysign(minDiff, diff);
 
         if (isinf(diff)) {
             direction.setX(maxX * ((diff < 0) * -2 + 1));
+        } else if (fabs(diff) >= maxDiff()) {
+            direction.setX(copysign(maxX, diff));
         } else {
-            direction.setX(maxX * diff / mSensors->maximum());
-        }
+            float k = log(2) / maxDiff();
+            float x = maxX * (exp(k * fabs(diff)) - 1);
 
-        mCounter = 0;
-        mLastFrontLeft = mSensors->frontLeft();
-        mLastFrontRight = mSensors->frontRight();
+            direction.setX(copysign(x, diff));
+        }
     }
 
     float front = mSensors->front();
     float maxY = sqrt(1 - direction.x() * direction.x());
 
-    direction.setY(isinf(front) ? maxY : maxY * front / mSensors->maximum());
+    if (isinf(front)) {
+        direction.setY(maxY);
+    } else {
+        float k = log(2) / brakingDistance() / 2;
+        float y = exp(k * front) - 1;
 
-    debugLog() << mSensors->frontLeft() << mSensors->front() 
-               << mSensors->frontRight()
-               << direction.x() << direction.y();
+        direction.setY(front <= brakingDistance() && y < maxY ? y : maxY);
+    }
+
+    //debugLog() << mSensors->frontLeft() << mSensors->front() 
+    //           << mSensors->frontRight()
+    //           << direction.x() << direction.y();
+
+    debugInfo() << mSensors->frontLeft()
+                << mSensors->front()
+                << mSensors->frontRight();
+
+    float magnitude = direction.magnitude();
+
+    if (magnitude > 1) {
+        direction.setX(direction.x() / magnitude - 0.01);
+        direction.setY(direction.y() / magnitude - 0.01);
+    }
 
     mMovementController->setDirection(direction);
 
@@ -46,9 +65,7 @@ BasicMovementHeuristics::BasicMovementHeuristics(BreadthSensors *sensors,
     : mSensors(sensors),
     mMovementController(movementController),
     mTicker(performance->createTicker()),
-    mLastFrontLeft(-1),
-    mLastFrontRight(-1),
-    mCounter(0)
+    mMaxDiff(sensors->maximum())
 {
     EventObjectConnect(sensors, ready, this, eval);
 }

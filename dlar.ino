@@ -33,7 +33,8 @@ static VL53L0XAsync *createSensor(unsigned char xshutPin,
     sensor->setVcselPeriodPreRange(18);
     sensor->setVcselPeriodFinalRange(14);
     sensor->initFinished()->connect(sensor, &sensorOnInitFinished);
-    sensor->initFailed()->connect(sensor, &sensorOnInitFailed);
+    sensor->initFailed()->connect((EventEmitter *) 257, &sensorOnInitFailed);
+    sensor->rangeError()->connect((EventEmitter *) 258, &sensorOnInitFailed);
 
     return sensor;
 }
@@ -55,18 +56,21 @@ setup()
     Serial.begin(9600);
 
     Performance *performance = new Performance;
-    BreadthSensors *sensors = new BreadthSensors(170, 300);
+    BreadthSensors *sensors = new BreadthSensors(105, 300);
 
     sensors->setFront(createSensor(12, 44));
     sensors->setFrontLeft(createSensor(10, 46));
     sensors->setFrontRight(createSensor(11, 45));
 
     RickshawController *rickshawController = new RickshawController(3, 4, 5, 9);
-    rickshawController->setMaxMotorDutyCycle(25);
+    rickshawController->setMaxMotorDutyCycle(20);
     rickshawController->setServoAngles(180, 90, 0);
 
     BasicMovementHeuristics *heuristics = new BasicMovementHeuristics(sensors,
             rickshawController, performance);
+
+    heuristics->setMaxDiff(800);
+    heuristics->setBrakingDistance(200);
 
 
     Application::instance()->started()->emit();

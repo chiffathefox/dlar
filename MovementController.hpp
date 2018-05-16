@@ -21,6 +21,7 @@ class MovementController : public EventObject
     unsigned long targetTime() const;
 
     void updateDirection();
+    void lerpDirectionTo(const Vector2f &value, unsigned long time = 0);
 
 
 public:
@@ -29,6 +30,5 @@ public:
 
     virtual Vector2f direction() const;
     virtual void setDirection(const Vector2f &value);
-    virtual void lerpDirectionTo(const Vector2f &value, unsigned long time = 0);
 
 };

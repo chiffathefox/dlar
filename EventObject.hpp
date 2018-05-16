@@ -41,6 +41,11 @@
 class EventObject
 {
 
+
+public:
+
+    ~EventObject();
+
 };
 
 

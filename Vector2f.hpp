@@ -2,6 +2,8 @@
 #pragma once
 
 
+#include <math.h>
+
 #include "Logger.hpp"
 
 
@@ -61,6 +63,12 @@ public:
     inline float sqrMagnitude() const
     {
         return x() * x() + y() * y();
+    }
+
+
+    inline float magnitude() const
+    {
+        return sqrt(sqrMagnitude());
     }
 
 
