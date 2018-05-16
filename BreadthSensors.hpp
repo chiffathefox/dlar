@@ -49,22 +49,16 @@
         {                                                                      \
             debugAssert(mReadySensors & mSensors == mSensors);                 \
                                                                                \
-            if (m##camelPart->range() == -1) {                                 \
-                return INFINITY;                                               \
-            }                                                                  \
-                                                                               \
-            return (float) m##camelPart->range();                              \
+            return m##camelPart->range();                                      \
         }
 
 
 #define BREADTH_SENSORS                         \
     BREADTH_SENSOR(front, Front, 1);            \
     BREADTH_SENSOR(frontLeft, FrontLeft, 2);    \
-    BREADTH_SENSOR(frontRight, FrontRight, 4);  
-/*
+    BREADTH_SENSOR(frontRight, FrontRight, 4);  \
     BREADTH_SENSOR(rearLeft, RearLeft, 8);      \
     BREADTH_SENSOR(rearRight, RearRight, 16);
-    */
 
 
 class BreadthSensors : public EventObject

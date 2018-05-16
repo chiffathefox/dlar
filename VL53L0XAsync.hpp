@@ -29,10 +29,13 @@ class VL53L0XAsync : public RangeSensor
 
 
     const unsigned char mXshutPin;
+
     unsigned char mExpires;
     unsigned char mVcselPeriodPreRange;
     unsigned char mVcselPeriodFinalRange;
-    uint16_t mRange;
+
+    float mRange;
+
     Timer mTimer;
 
 
@@ -47,9 +50,9 @@ public:
 
     virtual void start() override;
     virtual void reinit() override;
-    virtual uint16_t range() const override;
-    virtual uint16_t delta() const override;
-    virtual uint16_t maximum() const override;
+    virtual float range() const override;
+    virtual float delta() const override;
+    virtual float maximum() const override;
 
 
   public:

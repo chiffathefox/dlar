@@ -4,6 +4,7 @@
 // VL53L0X datasheet.
 
 #include <Wire.h>
+#include <math.h>
 
 #include "Debug.hpp"
 #include "Application.hpp"
@@ -83,19 +84,19 @@ void VL53L0XAsync::start()
 }
 
 
-uint16_t VL53L0XAsync::range() const
+float VL53L0XAsync::range() const
 {
-    return mRange > maximum() ? -1 : mRange;
+    return mRange > maximum() ? INFINITY : mRange;
 }
 
 
-uint16_t VL53L0XAsync::delta() const
+float VL53L0XAsync::delta() const
 {
-    return 10;
+    return 20;
 }
 
 
-uint16_t VL53L0XAsync::maximum() const
+float VL53L0XAsync::maximum() const
 {
     return 1500;
 }
@@ -530,11 +531,12 @@ void VL53L0XAsync::onPhaseCalibration()
 // Constructors ////////////////////////////////////////////////////////////////
 
 VL53L0XAsync::VL53L0XAsync(unsigned char xshutPin, unsigned char address)
-  : address(address)
+  : RangeSensor(),
+    address(address)
   , io_timeout(100) // no timeout
   , did_timeout(false),
     mTimer(10),
-    mRange(0),
+    mRange(INFINITY),
     mXshutPin(xshutPin),
     mVcselPeriodPreRange(14),
     mVcselPeriodFinalRange(10)

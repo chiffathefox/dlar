@@ -2,8 +2,6 @@
 #pragma once
 
 
-#include <stdint.h>
-
 #include "EventObject.hpp"
 
 
@@ -20,8 +18,8 @@ public:
 
     virtual void start() = 0;
     virtual void reinit() = 0;
-    virtual uint16_t range() const = 0;
-    virtual uint16_t delta() const = 0;
-    virtual uint16_t maximum() const = 0;
+    virtual float range() const = 0;
+    virtual float delta() const = 0;
+    virtual float maximum() const = 0;
 
 };
