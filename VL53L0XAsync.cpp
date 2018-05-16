@@ -657,10 +657,10 @@ void VL53L0XAsync::writeReg32Bit(uint8_t reg, uint32_t value)
 {
   Wire.beginTransmission(address);
   Wire.write(reg);
-  Wire.write((value >> 24) & 0xFF); // value highest byte
-  Wire.write((value >> 16) & 0xFF);
-  Wire.write((value >>  8) & 0xFF);
-  Wire.write( value        & 0xFF); // value lowest byte
+  Wire.write((unsigned char) (value >> 24) & 0xFF); // value highest byte
+  Wire.write((unsigned char) (value >> 16) & 0xFF);
+  Wire.write((unsigned char) (value >>  8) & 0xFF);
+  Wire.write((unsigned char)  value        & 0xFF); // value lowest byte
   Wire.endTransmission();
   //last_status = Wire.endTransmission();
 }
