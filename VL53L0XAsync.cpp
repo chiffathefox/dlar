@@ -35,6 +35,7 @@
 
 #define startTimer(slot)                                  \
     debugAssert(!mTimer.running());                       \
+    mTimer.expired()->disconnect(this, nullptr);          \
     EventObjectConnect(&mTimer, expired, this, slot);     \
     mTimer.setTimeout(10);                                \
     mTimer.start();                                       \

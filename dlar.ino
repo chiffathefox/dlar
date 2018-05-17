@@ -80,6 +80,8 @@ setup()
     heuristics->setMaxDiff(800);
     heuristics->setBrakingDistance(200);
 
+    debugInfo() << "started at" << millis();
+
 
     Application::instance()->started()->emit();
 }
