@@ -3,7 +3,7 @@ ECHO_PREFIX=Makefile:
 ARDUINO_ROOT=/home/denis/arduino/arduino-1.8.5
 ARDUINO=$(ARDUINO_ROOT)/arduino
 TARGET=dlar
-TTY=/dev/ttyUSB*
+TTY=/dev/ttyACM*
 TTY_BAUD=9600
 
 

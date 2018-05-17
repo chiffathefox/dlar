@@ -9,23 +9,23 @@ SerialLogger::SerialLogger(const char *level, const char *tag,
     : Logger(),
     mSuffix(suffix)
 {
-    Serial.write(level);
-    Serial.write(":");
-    Serial.write(tag);
-    Serial.write(":");
+    Serial1.write(level);
+    Serial1.write(":");
+    Serial1.write(tag);
+    Serial1.write(":");
 }
 
 
 SerialLogger::~SerialLogger()
 {
-    Serial.write(mSuffix);
+    Serial1.write(mSuffix);
 }
 
 
 Logger & SerialLogger::operator<<(int value)
 {
-    Serial.write(" ");
-    Serial.print(value);
+    Serial1.write(" ");
+    Serial1.print(value);
 
     return *this;
 }
@@ -33,8 +33,8 @@ Logger & SerialLogger::operator<<(int value)
 
 Logger & SerialLogger::operator<<(float value)
 {
-    Serial.write(" ");
-    Serial.print(value);
+    Serial1.write(" ");
+    Serial1.print(value);
 
     return *this;
 }
@@ -42,8 +42,8 @@ Logger & SerialLogger::operator<<(float value)
 
 Logger & SerialLogger::operator<<(double value)
 {
-    Serial.write(" ");
-    Serial.print(value);
+    Serial1.write(" ");
+    Serial1.print(value);
 
     return *this;
 }
@@ -51,8 +51,8 @@ Logger & SerialLogger::operator<<(double value)
 
 Logger & SerialLogger::operator<<(bool value)
 {
-    Serial.write(" ");
-    Serial.print(value ? "true" : "false");
+    Serial1.write(" ");
+    Serial1.print(value ? "true" : "false");
 
     return *this;
 }
@@ -60,8 +60,8 @@ Logger & SerialLogger::operator<<(bool value)
 
 Logger & SerialLogger::operator<<(unsigned long value)
 {
-    Serial.write(" ");
-    Serial.print(value);
+    Serial1.write(" ");
+    Serial1.print(value);
 
     return *this;
 }
@@ -69,8 +69,8 @@ Logger & SerialLogger::operator<<(unsigned long value)
 
 Logger & SerialLogger::operator<<(size_t value)
 {
-    Serial.write(" ");
-    Serial.print(value);
+    Serial1.write(" ");
+    Serial1.print(value);
 
     return *this;
 }
@@ -78,8 +78,8 @@ Logger & SerialLogger::operator<<(size_t value)
 
 Logger & SerialLogger::operator<<(const char *value)
 {
-    Serial.write(" ");
-    Serial.print(value);
+    Serial1.write(" ");
+    Serial1.print(value);
 
     return *this;
 }

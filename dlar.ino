@@ -25,6 +25,12 @@ static void sensorOnInitFailed(EventObject *receiver)
 }
 
 
+static void sensorOnRangeError(EventObject *receiver)
+{
+    debugWarn();
+}
+
+
 static VL53L0XAsync *createSensor(unsigned char xshutPin,
         unsigned char address)
 {
@@ -34,7 +40,7 @@ static VL53L0XAsync *createSensor(unsigned char xshutPin,
     sensor->setVcselPeriodFinalRange(14);
     sensor->initFinished()->connect(sensor, &sensorOnInitFinished);
     sensor->initFailed()->connect((EventEmitter *) 257, &sensorOnInitFailed);
-    sensor->rangeError()->connect((EventEmitter *) 258, &sensorOnInitFailed);
+    sensor->rangeError()->connect((EventEmitter *) 258, &sensorOnRangeError);
 
     return sensor;
 }
@@ -53,16 +59,18 @@ void
 setup()
 {
     Wire.begin();
-    Serial.begin(9600);
+    Serial1.begin(460800);
 
     Performance *performance = new Performance;
     BreadthSensors *sensors = new BreadthSensors(105, 300);
 
-    sensors->setFront(createSensor(12, 44));
-    sensors->setFrontLeft(createSensor(10, 46));
-    sensors->setFrontRight(createSensor(11, 45));
+    sensors->setFront(createSensor(PB12, 44));
+    sensors->setFrontLeft(createSensor(PB13, 46));
+    sensors->setFrontRight(createSensor(PB14, 45));
 
-    RickshawController *rickshawController = new RickshawController(3, 4, 5, 9);
+    RickshawController *rickshawController =
+        new RickshawController(27, 21, 22, PB0);
+
     rickshawController->setMaxMotorDutyCycle(20);
     rickshawController->setServoAngles(180, 90, 0);
 

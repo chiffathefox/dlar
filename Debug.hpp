@@ -40,6 +40,10 @@
     SerialLogger("\033[33mW", __PRETTY_FUNCTION__, "\033[0m\n")
 
 
+#    define debugEmerg()                                   \
+    SerialLogger("\033[33mE", __PRETTY_FUNCTION__, "\033[0m\n")
+
+
 #    define debugInfo()                                    \
     SerialLogger("\033[32mI", __PRETTY_FUNCTION__, "\033[0m\n")
 
@@ -57,6 +61,10 @@
     SerialLogger("\033[33mW", "", "\033[0m\n")
 
 
+#    define debugEmerg()                                   \
+    SerialLogger("\033[33mE", "", "\033[0m\n")
+
+
 #    define debugInfo()                                    \
     SerialLogger("\033[32mI", "", "\033[0m\n")
 
@@ -72,6 +80,9 @@
 
 
 #    define debugWarn() DummyLogger()
+
+
+#    define debugEmerg() DummyLogger()
 
 
 #    define debugInfo() DummyLogger()
