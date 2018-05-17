@@ -4,55 +4,67 @@
 #include "SerialLogger.hpp"
 
 
+Stream *SerialLogger::sSerial = &Serial;
+
+
 SerialLogger::SerialLogger(const char *level, const char *tag,
         const char *suffix)
     : Logger(),
     mSuffix(suffix)
 {
-    Serial1.write(level);
-    Serial1.write(":");
-    Serial1.write(tag);
-    Serial1.write(":");
+    sSerial->write(level);
+    sSerial->write(":");
+    sSerial->write(tag);
+    sSerial->write(":");
 }
 
 
 SerialLogger::~SerialLogger()
 {
-    Serial1.write(mSuffix);
+    sSerial->write(mSuffix);
+}
+
+
+Logger & SerialLogger::operator<<(char value)
+{
+    sSerial->write(" ");
+    sSerial->print(value);
+
+    return *this;
+}
+
+
+Logger & SerialLogger::operator<<(unsigned char value)
+{
+    sSerial->write(" ");
+    sSerial->print(value);
+
+    return *this;
 }
 
 
 Logger & SerialLogger::operator<<(int value)
 {
-    Serial1.write(" ");
-    Serial1.print(value);
+    sSerial->write(" ");
+    sSerial->print(value);
 
     return *this;
 }
 
 
-Logger & SerialLogger::operator<<(float value)
+Logger & SerialLogger::operator<<(unsigned int value)
 {
-    Serial1.write(" ");
-    Serial1.print(value);
+    sSerial->write(" ");
+    sSerial->print(value);
 
     return *this;
 }
 
 
-Logger & SerialLogger::operator<<(double value)
+Logger & SerialLogger::operator<<(long value)
 {
-    Serial1.write(" ");
-    Serial1.print(value);
-
-    return *this;
-}
-
-
-Logger & SerialLogger::operator<<(bool value)
-{
-    Serial1.write(" ");
-    Serial1.print(value ? "true" : "false");
+    sSerial->write(" ");
+    sSerial->print(value);
 
     return *this;
 }
@@ -60,17 +72,26 @@ Logger & SerialLogger::operator<<(bool value)
 
 Logger & SerialLogger::operator<<(unsigned long value)
 {
-    Serial1.write(" ");
-    Serial1.print(value);
+    sSerial->write(" ");
+    sSerial->print(value);
 
     return *this;
 }
 
 
-Logger & SerialLogger::operator<<(size_t value)
+Logger & SerialLogger::operator<<(double value)
 {
-    Serial1.write(" ");
-    Serial1.print(value);
+    sSerial->write(" ");
+    sSerial->print(value);
+
+    return *this;
+}
+
+
+Logger & SerialLogger::operator<<(bool value)
+{
+    sSerial->write(" ");
+    sSerial->write(value ? "true" : "false");
 
     return *this;
 }
@@ -78,8 +99,8 @@ Logger & SerialLogger::operator<<(size_t value)
 
 Logger & SerialLogger::operator<<(const char *value)
 {
-    Serial1.write(" ");
-    Serial1.print(value);
+    sSerial->write(" ");
+    sSerial->write(value);
 
     return *this;
 }

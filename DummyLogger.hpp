@@ -11,45 +11,57 @@ class DummyLogger : public Logger
 
 public:
 
-    inline Logger & operator<<(int value) override
+    inline virtual Logger & operator<<(char value) override
     {
-
+        return *this;
     }
 
 
-    inline Logger & operator<<(float value) override
+    inline virtual Logger & operator<<(unsigned char value) override
     {
-
+        return *this;
     }
 
 
-    inline Logger & operator<<(double value) override
+    inline virtual Logger & operator<<(int value) override
     {
-
+        return *this;
     }
 
 
-    inline Logger & operator<<(bool value) override
+    inline virtual Logger & operator<<(unsigned int value) override
     {
-
+        return *this;
     }
 
 
-    inline Logger & operator<<(unsigned long value) override
+    inline virtual Logger & operator<<(long value) override
     {
-
+        return *this;
     }
 
 
-    inline Logger & operator<<(size_t value) override
+    inline virtual Logger & operator<<(unsigned long value) override
     {
-
+        return *this;
     }
 
 
-    inline Logger & operator<<(const char *value) override
+    inline virtual Logger & operator<<(double value) override
     {
+        return *this;
+    }
 
+
+    inline virtual Logger & operator<<(bool value) override
+    {
+        return *this;
+    }
+
+
+    inline virtual Logger & operator<<(const char *value) override
+    {
+        return *this;
     }
 
 

@@ -5,6 +5,7 @@
 #include "Performance.hpp"
 #include "Application.hpp"
 #include "VL53L0XAsync.hpp"
+#include "SerialLogger.hpp"
 #include "BreadthSensors.hpp"
 #include "RickshawController.hpp"
 #include "BasicMovementHeuristics.hpp"
@@ -29,7 +30,6 @@ static void sensorOnRangeError(EventObject *receiver)
 {
     debugWarn();
 }
-
 
 static VL53L0XAsync *createSensor(unsigned char xshutPin,
         unsigned char address)
@@ -60,6 +60,7 @@ setup()
 {
     Wire.begin();
     Serial1.begin(460800);
+    SerialLogger::setSerial(&Serial1);
 
     Performance *performance = new Performance;
     BreadthSensors *sensors = new BreadthSensors(105, 300);
