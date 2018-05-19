@@ -1,6 +1,5 @@
 
-#include <Wire.h>
-
+#include "TWI.hpp"
 #include "Debug.hpp"
 #include "Performance.hpp"
 #include "Application.hpp"
@@ -63,8 +62,9 @@ int freeRam()
 void
 setup()
 {
-    Wire.begin();
-    Wire.setClock(1000);
+    TWI::instance()->begin();
+    TWI::instance()->setClock(1000);
+
     Serial1.begin(460800);
     SerialLogger::setSerial(&Serial1);
 

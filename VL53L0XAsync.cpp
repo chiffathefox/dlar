@@ -3,9 +3,9 @@
 // or paraphrased from the API source code, API user manual (UM2039), and the
 // VL53L0X datasheet.
 
-#include <Wire.h>
 #include <math.h>
 
+#include "TWI.hpp"
 #include "Debug.hpp"
 #include "Application.hpp"
 
@@ -637,51 +637,51 @@ void VL53L0XAsync::onStartedTimerExpired()
 // Write an 8-bit register
 void VL53L0XAsync::writeReg(uint8_t reg, uint8_t value)
 {
-  Wire.beginTransmission(address);
-  Wire.write(reg);
-  Wire.write(value);
-  Wire.endTransmission();
-  //last_status = Wire.endTransmission();
+    TWI *twi = TWI::instance();
+    twi->beginTransmission(address);
+    twi->write(reg);
+    twi->write(value);
+    twi->endTransmission();
 }
 
 // Write a 16-bit register
 void VL53L0XAsync::writeReg16Bit(uint8_t reg, uint16_t value)
 {
-  Wire.beginTransmission(address);
-  Wire.write(reg);
-  Wire.write((value >> 8) & 0xFF); // value high byte
-  Wire.write( value       & 0xFF); // value low byte
-  Wire.endTransmission();
-  //last_status = Wire.endTransmission();
+    TWI *twi = TWI::instance();
+    twi->beginTransmission(address);
+    twi->write(reg);
+    twi->write((value >> 8) & 0xFF); // value high byte
+    twi->write( value       & 0xFF); // value low byte
+    twi->endTransmission();
 }
 
 // Write a 32-bit register
 void VL53L0XAsync::writeReg32Bit(uint8_t reg, uint32_t value)
 {
-  Wire.beginTransmission(address);
-  Wire.write(reg);
-  Wire.write((unsigned char) (value >> 24) & 0xFF); // value highest byte
-  Wire.write((unsigned char) (value >> 16) & 0xFF);
-  Wire.write((unsigned char) (value >>  8) & 0xFF);
-  Wire.write((unsigned char)  value        & 0xFF); // value lowest byte
-  Wire.endTransmission();
-  //last_status = Wire.endTransmission();
+    TWI *twi = TWI::instance();
+    twi->beginTransmission(address);
+    twi->write(reg);
+    twi->write((unsigned char) (value >> 24) & 0xFF); // value highest byte
+    twi->write((unsigned char) (value >> 16) & 0xFF);
+    twi->write((unsigned char) (value >>  8) & 0xFF);
+    twi->write((unsigned char)  value        & 0xFF); // value lowest byte
+    twi->endTransmission();
 }
 
 // Read an 8-bit register
 uint8_t VL53L0XAsync::readReg(uint8_t reg)
 {
-  uint8_t value;
+    uint8_t value;
 
-  Wire.beginTransmission(address);
-  Wire.write(reg);
-  Wire.endTransmission();
-  //last_status = Wire.endTransmission();
+    TWI *twi = TWI::instance();
+    twi->beginTransmission(address);
+    twi->write(reg);
+    twi->endTransmission();
 
-  Wire.requestFrom(address, (uint8_t)1);
-  value = Wire.read();
+    twi->requestFrom(address, (uint8_t)1);
+    value = twi->read();
 
-  return value;
+    return value;
 }
 
 // Read a 16-bit register
@@ -689,14 +689,14 @@ uint16_t VL53L0XAsync::readReg16Bit(uint8_t reg)
 {
   uint16_t value;
 
-  Wire.beginTransmission(address);
-  Wire.write(reg);
-  Wire.endTransmission();
-  //last_status = Wire.endTransmission();
+    TWI *twi = TWI::instance();
+    twi->beginTransmission(address);
+    twi->write(reg);
+    twi->endTransmission();
 
-  Wire.requestFrom(address, (uint8_t)2);
-  value  = (uint16_t)Wire.read() << 8; // value high byte
-  value |=           Wire.read();      // value low byte
+  twi->requestFrom(address, (uint8_t)2);
+  value  = (uint16_t)twi->read() << 8; // value high byte
+  value |=           twi->read();      // value low byte
 
   return value;
 }
@@ -706,16 +706,16 @@ uint32_t VL53L0XAsync::readReg32Bit(uint8_t reg)
 {
   uint32_t value;
 
-  Wire.beginTransmission(address);
-  Wire.write(reg);
-  Wire.endTransmission();
-  //last_status = Wire.endTransmission();
+    TWI *twi = TWI::instance();
+  twi->beginTransmission(address);
+  twi->write(reg);
+  twi->endTransmission();
 
-  Wire.requestFrom(address, (uint8_t)4);
-  value  = (uint32_t)Wire.read() << 24; // value highest byte
-  value |= (uint32_t)Wire.read() << 16;
-  value |= (uint16_t)Wire.read() <<  8;
-  value |=           Wire.read();       // value lowest byte
+  twi->requestFrom(address, (uint8_t)4);
+  value  = (uint32_t)twi->read() << 24; // value highest byte
+  value |= (uint32_t)twi->read() << 16;
+  value |= (uint16_t)twi->read() <<  8;
+  value |=           twi->read();       // value lowest byte
 
   return value;
 }
@@ -724,32 +724,32 @@ uint32_t VL53L0XAsync::readReg32Bit(uint8_t reg)
 // starting at the given register
 void VL53L0XAsync::writeMulti(uint8_t reg, uint8_t const * src, uint8_t count)
 {
-  Wire.beginTransmission(address);
-  Wire.write(reg);
+    TWI *twi = TWI::instance();
+  twi->beginTransmission(address);
+  twi->write(reg);
 
   while (count-- > 0)
   {
-    Wire.write(*(src++));
+    twi->write(*(src++));
   }
 
-  Wire.endTransmission();
-  //last_status = Wire.endTransmission();
+  twi->endTransmission();
 }
 
 // Read an arbitrary number of bytes from the sensor, starting at the given
 // register, into the given array
 void VL53L0XAsync::readMulti(uint8_t reg, uint8_t * dst, uint8_t count)
 {
-  Wire.beginTransmission(address);
-  Wire.write(reg);
-  Wire.endTransmission();
-  //last_status = Wire.endTransmission();
+    TWI *twi = TWI::instance();
+  twi->beginTransmission(address);
+  twi->write(reg);
+  twi->endTransmission();
 
-  Wire.requestFrom(address, count);
+  twi->requestFrom(address, count);
 
   while (count-- > 0)
   {
-    *(dst++) = Wire.read();
+    *(dst++) = twi->read();
   }
 }
 
