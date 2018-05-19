@@ -7,6 +7,7 @@
 #include "VL53L0XAsync.hpp"
 #include "SerialLogger.hpp"
 #include "BreadthSensors.hpp"
+#include "HystRangeSensor.hpp"
 #include "RickshawController.hpp"
 #include "BasicMovementHeuristics.hpp"
 
@@ -31,7 +32,8 @@ static void sensorOnRangeError(EventObject *receiver)
     debugWarn();
 }
 
-static VL53L0XAsync *createSensor(unsigned char xshutPin,
+
+static RangeSensor *createSensor(unsigned char xshutPin,
         unsigned char address)
 {
     VL53L0XAsync *sensor = new VL53L0XAsync(xshutPin, address);
@@ -39,10 +41,13 @@ static VL53L0XAsync *createSensor(unsigned char xshutPin,
     sensor->setVcselPeriodPreRange(18);
     sensor->setVcselPeriodFinalRange(14);
     sensor->initFinished()->connect(sensor, &sensorOnInitFinished);
-    sensor->initFailed()->connect((EventEmitter *) 257, &sensorOnInitFailed);
-    sensor->rangeError()->connect((EventEmitter *) 258, &sensorOnRangeError);
 
-    return sensor;
+    RangeSensor *s = new HystRangeSensor(sensor, 3);
+
+    s->initFailed()->connect(s, &sensorOnInitFailed);
+    s->rangeError()->connect(s, &sensorOnRangeError);
+
+    return s;
 }
 
 
@@ -59,6 +64,7 @@ void
 setup()
 {
     Wire.begin();
+    Wire.setClock(1000);
     Serial1.begin(460800);
     SerialLogger::setSerial(&Serial1);
 

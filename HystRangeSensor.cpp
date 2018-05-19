@@ -7,9 +7,10 @@
 void HystRangeSensor::onRangeReady()
 {
     mBuffer[mIndex] = mSensor->range();
+    mBufferFilled = mBufferFilled || (mIndex >= size() - 1);
     mIndex = (mIndex + 1) % size();
 
-    if (mIndex != 0) {
+    if (!mBufferFilled) {
         return;
     }
 
@@ -21,19 +22,26 @@ void HystRangeSensor::onRangeReady()
 
     if (infs * 2 >= size()) {
         mLast = INFINITY;
+        rangeReady()->post();
 
         return;
     }
 
-    mLast = 0;
+    float value = 0;
 
     for (int i = 0; i < size(); i++) {
         if (isfinite(mBuffer[i])) {
-            mLast += mBuffer[i];
+            value += mBuffer[i];
         }
     }
 
-    mLast /= size() - infs;
+    value /= size() - infs;
+
+    if (fabs(value - mLast) > mSensor->delta()) {
+        mLast = value;
+    }
+
+    rangeReady()->post();
 }
 
 
@@ -42,7 +50,8 @@ HystRangeSensor::HystRangeSensor(RangeSensor *sensor, int size)
     mSize(size),
     mIndex(0),
     mLast(INFINITY),
-    mBuffer(new float[size])
+    mBuffer(new float[size]),
+    mBufferFilled(false)
 {
     EventObjectConnect(sensor, initFailed, initFailed(), emit);
     EventObjectConnect(sensor, initFinished, initFinished(), emit);

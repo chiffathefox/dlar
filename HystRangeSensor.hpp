@@ -16,6 +16,7 @@ class HystRangeSensor : public RangeSensor
     int mIndex;
     float mLast;
     float *mBuffer;
+    unsigned mBufferFilled:1;
 
 
 public:
