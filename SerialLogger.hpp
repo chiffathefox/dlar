@@ -18,7 +18,7 @@ class SerialLogger : public Logger
 
 public:
 
-    static inline void setSerial(HardwareSerial *value)
+    static inline void setSerial(Stream *value)
     {
         sSerial = value;
     }
