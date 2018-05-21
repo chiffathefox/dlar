@@ -65,18 +65,18 @@ setup()
     TWI::instance()->begin();
     TWI::instance()->setClock(1000);
 
-    Serial1.begin(460800);
-    SerialLogger::setSerial(&Serial1);
+    Serial.begin(460800);
+    SerialLogger::setSerial(&Serial);
 
     Performance *performance = new Performance;
     BreadthSensors *sensors = new BreadthSensors(105, 300);
 
-    sensors->setFront(createSensor(PB12, 44));
-    sensors->setFrontLeft(createSensor(PB13, 46));
-    sensors->setFrontRight(createSensor(PB14, 45));
+    sensors->setFront(createSensor(29, 44));
+    sensors->setFrontLeft(createSensor(30, 46));
+    sensors->setFrontRight(createSensor(31, 45));
 
     RickshawController *rickshawController =
-        new RickshawController(27, 21, 22, PB0);
+        new RickshawController(27, 21, 22, PA7);
 
     rickshawController->setMaxMotorDutyCycle(20);
     rickshawController->setServoAngles(180, 90, 0);
