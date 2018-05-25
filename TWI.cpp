@@ -12,21 +12,25 @@ TWI TWI::sInstance(1);
 
 unsigned char TWI::process(unsigned char stop)
 {
-    //debugLog() << (mDevice->state == I2C_STATE_IDLE);
-    int32_t res = i2c_master_xfer(mDevice, &itc_msg, 1, mTimeout   );
-    //debugLog() << (mDevice->state == I2C_STATE_IDLE) <<  res;
+    int32_t res = i2c_master_xfer(mDevice, &itc_msg, 1, mTimeout);
 
+    switch (res) {
+    
+       
+    case I2C_ERROR_TIMEOUT:
 
-    if(res==I2C_ERROR_TIMEOUT)
-    {
-        debugInfo()<<"TIMEOUT&&Try reset i2c";
+        debugWarn() << "I2C_ERROR_TIMEOUT";
+
         i2c_disable(mDevice);
         i2c_master_enable(mDevice, mFlags);
-    }
 
-    
-    if (res == -1) {
-        //debugInfo()<<"ERROR -1";
+        return StatusError;
+
+
+    case I2C_ERROR_PROTOCOL:
+
+        debugWarn() << "I2C_PROTOCOL_ERROR";
+
         if (mDevice->error_flags & I2C_SR1_AF) {
             res = (mDevice->error_flags & I2C_SR1_ADDR ? ENACKADDR : 
                                                           ENACKTRNS);
@@ -35,11 +39,16 @@ unsigned char TWI::process(unsigned char stop)
         } else {
             res = EOTHER;
         }
+
         i2c_disable(mDevice);
         i2c_master_enable(mDevice, mFlags);
+
+        return STATUS_ERROR;
+
+
     }
 
-    return res;
+    return StatusSuccess;
 }
 
 
