@@ -39,13 +39,9 @@ void BasicMovementHeuristics::eval()
         direction.setY(front <= brakingDistance() && y < maxY ? y : maxY);
     }
 
-    //debugLog() << mSensors->frontLeft() << mSensors->front() 
-    //           << mSensors->frontRight()
-    //           << direction.x() << direction.y();
-
-    debugInfo() << mSensors->frontLeft()
-                << mSensors->front()
-                << mSensors->frontRight();
+    debugLog() << mSensors->frontLeft()
+               << mSensors->front()
+               << mSensors->frontRight();
 
     float magnitude = direction.magnitude();
 
