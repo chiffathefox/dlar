@@ -5,7 +5,7 @@ ARDUINO=$(ARDUINO_ROOT)/arduino
 TARGET=dlar
 TTY=/dev/ttyACM*
 TTY_BAUD=9600
-
+TTY_PARAMS=-parenb -parodd cs8 hupcl -cstopb cread clocal -crtscts -ignbrk -brkint -ignpar -parmrk -inpck -istrip -inlcr -igncr -icrnl -ixon -ixoff -iuclc -ixany -imaxbel -iutf8 -opost -olcuc -ocrnl onlcr -onocr -onlret -ofill -ofdel nl0 cr0 tab0 bs0 vt0 ff0 -isig -icanon -iexten -echo -echoe -echok -echonl -noflsh -xcase -tostop -echoprt -echoctl -echoke raw -clocal icrnl
 
 all: install tty
 
@@ -18,7 +18,7 @@ install:
 
 
 tty:
-	stty -F $(TTY) $(TTY_BAUD) -parenb -parodd cs8 -hupcl -cstopb cread clocal -crtscts -ignbrk -brkint -ignpar -parmrk -inpck -istrip -inlcr -igncr -icrnl -ixon -ixoff -iuclc -ixany -imaxbel -iutf8 -opost -olcuc -ocrnl -onlcr -onocr -onlret -ofill -ofdel nl0 cr0 tab0 bs0 vt0 ff0 -isig -icanon -iexten -echo -echoe -echok -echonl noflsh -xcase -tostop -echoprt -echoctl -echoke
+	stty -F $(TTY) $(TTY_BAUD) $(TTY_PARAMS)
 	@echo "$(ECHO_PREFIX)SERIAL OUTPUT FOLLOWS:"
 	@echo
 
