@@ -43,7 +43,7 @@ unsigned char TWI::process(unsigned char stop)
         i2c_disable(mDevice);
         i2c_master_enable(mDevice, mFlags);
 
-        return STATUS_ERROR;
+        return StatusError;
 
 
     }
