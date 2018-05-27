@@ -9,7 +9,8 @@
 
 EventEmitter::EventEmitter()
     : mLastEmitted(-1),
-    mEmitting(false)
+    mEmitting(false),
+    mStopPropagation(false)
 {
 }
 
@@ -52,7 +53,7 @@ void EventEmitter::emit()
     mEmitting = true;
 
     for (QueueNode<ReceiverSlot> *node = head->next;
-        node != head;
+        node != head && !mStopPropagation;
         node = node->next) {
 
         ReceiverSlot &receiverSlot = node->value;
@@ -66,10 +67,17 @@ void EventEmitter::emit()
 
     mLastEmitted = millis();
     mEmitting = false;
+    mStopPropagation = false;
 }
 
 
 void EventEmitter::post()
 {
     EventObjectOnce(Application::instance(), loopPost, this, emit);
+}
+
+
+void EventEmitter::stopPropagation()
+{
+    mStopPropagation = 1;
 }

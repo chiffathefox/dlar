@@ -35,6 +35,13 @@ protected:
 public:
 
 
+    enum StatusCode : unsigned char
+    {
+        StatusSuccess = 0,
+        StatusError = 4
+    };
+
+
     inline static TWI *instance()
     {
         return &sInstance;

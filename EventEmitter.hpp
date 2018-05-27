@@ -23,6 +23,7 @@ public:
     void disconnect(EventObject *receiver, Slot slot);
     void once(EventObject *receiver, Slot slot);
     void post();
+    void stopPropagation();
 
 
     inline unsigned long lastEmitted() const
@@ -83,6 +84,7 @@ private:
     unsigned long mLastEmitted;
 
     unsigned mEmitting:1;
+    unsigned mStopPropagation:1;
 
 
 };
