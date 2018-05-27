@@ -3,3 +3,10 @@
 *.log
 debug
 *.ino_
+*.sln
+/Debug/
+.vs/
+__vm/
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
