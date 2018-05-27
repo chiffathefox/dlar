@@ -6,6 +6,7 @@
 
 #include "RangeSensor.hpp"
 #include "Timer.hpp"
+#include "ValueContainer.hpp"
 
 
 class VL53L0XAsync : public RangeSensor
@@ -41,9 +42,10 @@ class VL53L0XAsync : public RangeSensor
 
     bool tickTimer();
     void shutdown();
+    void onRangeError();
+    void onSingleRefCalibrationError();
 
-    void startContinuous(uint32_t period_ms = 0);
-    void stopContinuous(void);
+    bool startContinuous(uint32_t period_ms = 0);
 
 
 public:
@@ -151,25 +153,22 @@ public:
 
     inline uint8_t getAddress(void) { return address; }
 
-    void writeReg(uint8_t reg, uint8_t value);
-    void writeReg16Bit(uint8_t reg, uint16_t value);
-    void writeReg32Bit(uint8_t reg, uint32_t value);
-    uint8_t readReg(uint8_t reg);
-    uint16_t readReg16Bit(uint8_t reg);
-    uint32_t readReg32Bit(uint8_t reg);
+    bool writeReg(uint8_t reg, uint8_t value);
+    bool writeReg16Bit(uint8_t reg, uint16_t value);
+    bool writeReg32Bit(uint8_t reg, uint32_t value);
+    ValueContainer<unsigned char> readReg(uint8_t reg);
+    ValueContainer<uint16_t> readReg16Bit(uint8_t reg);
 
-    void writeMulti(uint8_t reg, uint8_t const * src, uint8_t count);
-    void readMulti(uint8_t reg, uint8_t * dst, uint8_t count);
+    bool writeMulti(uint8_t reg, uint8_t const * src, uint8_t count);
+    bool readMulti(uint8_t reg, uint8_t * dst, uint8_t count);
 
-    void setSignalRateLimit(float limit_Mcps);
-    float getSignalRateLimit(void);
+    bool setSignalRateLimit(float limit_Mcps);
 
     bool setMeasurementTimingBudget(uint32_t budget_us);
-    uint32_t getMeasurementTimingBudget(void);
+    ValueContainer<uint32_t> getMeasurementTimingBudget(void);
 
     void setVcselPeriodPreRange(unsigned char value);
     void setVcselPeriodFinalRange(unsigned char value);
-    uint8_t getVcselPulsePeriod(vcselPeriodType type);
 
     inline void setTimeout(uint16_t timeout) { io_timeout = timeout; }
     inline uint16_t getTimeout(void) { return io_timeout; }
@@ -192,6 +191,7 @@ public:
       uint32_t msrc_dss_tcc_us,    pre_range_us,    final_range_us;
     };
 
+
     uint8_t address;
     uint16_t io_timeout;
     bool did_timeout;
@@ -203,8 +203,8 @@ public:
 
     void getSpadInfo();
 
-    void getSequenceStepEnables(SequenceStepEnables * enables);
-    void getSequenceStepTimeouts(SequenceStepEnables const * enables, SequenceStepTimeouts * timeouts);
+    bool getSequenceStepEnables(SequenceStepEnables * enables);
+    bool getSequenceStepTimeouts(SequenceStepEnables const * enables, SequenceStepTimeouts * timeouts);
 
     //bool performSingleRefCalibration(uint8_t vhv_init_byte);
     void performSingleRefCalibration(uint8_t vhv_init_byte);

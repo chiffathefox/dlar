@@ -15,8 +15,48 @@ static void sensorOnInitFinished(EventObject *receiver)
 {
     VL53L0XAsync *sensor = static_cast<VL53L0XAsync *> (receiver);
 
-    debugAssert(sensor->setMeasurementTimingBudget(20000));
-    sensor->setSignalRateLimit(0.1);
+    if (!sensor->setMeasurementTimingBudget(20000) ||
+            !sensor->setSignalRateLimit(0.1)) {
+
+        sensor->initFinished()->stopPropagation();
+        sensor->reinit();
+    }
+}
+
+
+static void frontSensorOnInitFailed(EventObject *receiver)
+{
+    debugWarn();
+}
+
+
+static void frontSensorOnRangeError(EventObject *receiver)
+{
+    debugWarn();
+}
+
+
+static void frontLeftSensorOnInitFailed(EventObject *receiver)
+{
+    debugWarn();
+}
+
+
+static void frontLeftSensorOnRangeError(EventObject *receiver)
+{
+    debugWarn();
+}
+
+
+static void frontRightSensorOnInitFailed(EventObject *receiver)
+{
+    debugWarn();
+}
+
+
+static void frontRightSensorOnRangeError(EventObject *receiver)
+{
+    debugWarn();
 }
 
 
@@ -62,6 +102,11 @@ int freeRam()
 void
 setup()
 {
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(6000);
+    digitalWrite(LED_BUILTIN, LOW);
+
     TWI::instance()->begin();
     TWI::instance()->setClock(1000);
 
@@ -70,10 +115,26 @@ setup()
 
     Performance *performance = new Performance;
     BreadthSensors *sensors = new BreadthSensors(105, 300);
+    RangeSensor *sensor = createSensor(29, 44);
 
-    sensors->setFront(createSensor(29, 44));
-    sensors->setFrontLeft(createSensor(30, 46));
-    sensors->setFrontRight(createSensor(31, 45));
+    sensor->initFailed()->connect(sensor, &frontSensorOnInitFailed);
+    sensor->rangeError()->connect(sensor, &frontSensorOnRangeError);
+
+    sensors->setFront(sensor);
+
+    sensor = createSensor(30, 46);
+
+    sensor->initFailed()->connect(sensor, &frontLeftSensorOnInitFailed);
+    sensor->rangeError()->connect(sensor, &frontLeftSensorOnRangeError);
+
+    sensors->setFrontLeft(sensor);
+
+    sensor = createSensor(31, 45);
+
+    sensor->initFailed()->connect(sensor, &frontRightSensorOnInitFailed);
+    sensor->rangeError()->connect(sensor, &frontRightSensorOnRangeError);
+
+    sensors->setFrontRight(sensor);
 
     RickshawController *rickshawController =
         new RickshawController(27, 21, 22, PA7);
