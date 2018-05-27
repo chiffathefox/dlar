@@ -54,6 +54,8 @@ void BasicMovementHeuristics::eval()
         direction.setY(direction.y() / magnitude - 0.01);
     }
 
+	//debugLog() << "DIR_X: " << direction.x();
+
     mMovementController->setDirection(direction);
 
     mTicker->tick();

@@ -128,8 +128,12 @@ void VL53L0XAsync::onRangeReadyTimerExpired()
     mRange = readReg16Bit(RESULT_RANGE_STATUS + 10);
 
     writeReg(SYSTEM_INTERRUPT_CLEAR, 0x01);
-
+	
     rangeReady()->post();
+
+	debugAssert(readReg(0) == 2);
+
+
 }
 
 
