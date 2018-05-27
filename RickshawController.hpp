@@ -32,12 +32,6 @@ class RickshawController : public MovementController
 
 public:
 
-	void Calibrate()
-	{
-		mServo.write(90);
-	}
-
-
     explicit RickshawController(unsigned char pwmPin, unsigned char fwdPin,
             unsigned char bwdPin, unsigned char servoPin);
 

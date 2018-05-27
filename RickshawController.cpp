@@ -62,11 +62,7 @@ void RickshawController::setDirection(const Vector2f &value)
     digitalWrite(mBwdPin, !isForward);
     analogWrite(mPwmPin, (float) maxMotorDutyCycle() * value.y());
 
-	unsigned char angle = servoAngle(value.x());
-
-	debugLog() << "Write servo angle: " << angle;
-
-    mServo.write(angle);
+    mServo.write(servoAngle(value.x()));
 }
 
 

@@ -1,3 +1,4 @@
+
 #include "TWI.hpp"
 #include "Debug.hpp"
 #include "Performance.hpp"
@@ -77,8 +78,8 @@ setup()
     RickshawController *rickshawController =
         new RickshawController(27, 21, 22, PA7);
 
-	rickshawController->setMaxMotorDutyCycle(30);
-    rickshawController->setServoAngles(170, 90, 20);
+    rickshawController->setMaxMotorDutyCycle(20);
+    rickshawController->setServoAngles(180, 90, 0);
 
     BasicMovementHeuristics *heuristics = new BasicMovementHeuristics(sensors,
             rickshawController, performance);
@@ -90,10 +91,6 @@ setup()
 
 
     Application::instance()->started()->emit();
-
-	rickshawController->Calibrate();
-	delay(2000);
-
 }
 
 
